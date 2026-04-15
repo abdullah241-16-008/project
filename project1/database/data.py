@@ -25,7 +25,7 @@ async def get_all_users():
             ]
         }
     
-    except Exception as e:
+    except Exception:
         cursor.close()
         db.close()
         return JSONResponse(status_code=500, content={"message": f"Error: {str(e)}"})
@@ -48,10 +48,10 @@ async def get_public_key(user_id: int):
 
         return {"user_id": user_id, "public_key": result[0]}
 
-    except Exception as e:
+    except Exception:
         cursor.close()
         db.close()
-        return JSONResponse(status_code=500, content={"message": f"Error: {str(e)}"})
+        return JSONResponse(status_code=500, content={"message": "Internal server error"})
 
 
 @router.post("/private-key")
@@ -73,18 +73,18 @@ async def get_private_key(data: dict):
         db.close()
 
         if not result:
-            return JSONResponse(status_code=404, content={"message": "User not found"})
+            return JSONResponse(status_code=401, content={"message": "Invalid credentials"})
 
         private_key_pem, stored_password = result
         if isinstance(stored_password, str):
             stored_password = stored_password.encode()
 
         if not bcrypt.checkpw(password.encode(), stored_password):
-            return JSONResponse(status_code=401, content={"message": "Wrong password"})
+            return JSONResponse(status_code=401, content={"message": "Invalid credentials"})
 
         return {"user_id": user_id, "private_key": private_key_pem}
 
     except Exception as e:
         cursor.close()
         db.close()
-        return JSONResponse(status_code=500, content={"message": f"Error: {str(e)}"})
+        return JSONResponse(status_code=500, content={"message": "Internal server error"})
