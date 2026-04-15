@@ -84,7 +84,7 @@ async def get_private_key(data: dict):
 
         return {"user_id": user_id, "private_key": private_key_pem}
 
-    except Exception as e:
+    except Exception:
         cursor.close()
         db.close()
         return JSONResponse(status_code=500, content={"message": "Internal server error"})
