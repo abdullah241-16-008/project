@@ -25,7 +25,7 @@ async def get_all_users():
             ]
         }
     
-    except Exception:
+    except Exception as e:
         cursor.close()
         db.close()
         return JSONResponse(status_code=500, content={"message": f"Error: {str(e)}"})
