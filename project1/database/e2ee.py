@@ -65,6 +65,7 @@ def rsa_encrypt(message: Union[str, bytes], public_key: RSA.RsaKey) -> bytes:
     if isinstance(message, str):
         message = message.encode()
 
+    # OAEP max payload = modulus_bytes - (2 * hash_size) - 2
     max_message_length = public_key.size_in_bytes() - (2 * SHA256.digest_size) - 2
     if len(message) > max_message_length:
         raise ValueError(
