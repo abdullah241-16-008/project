@@ -4,7 +4,7 @@ import base64
 from typing import Tuple, Union
 
 from Crypto.Cipher import AES, PKCS1_OAEP
-from Crypto.Hash import SHA1
+from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes
 from Crypto.Util.Padding import pad, unpad
@@ -65,19 +65,19 @@ def rsa_encrypt(message: Union[str, bytes], public_key: RSA.RsaKey) -> bytes:
     if isinstance(message, str):
         message = message.encode()
 
-    max_message_length = public_key.size_in_bytes() - (2 * SHA1.digest_size) - 2
+    max_message_length = public_key.size_in_bytes() - (2 * SHA256.digest_size) - 2
     if len(message) > max_message_length:
         raise ValueError(
             f"Message too long for RSA OAEP encryption. Max length is {max_message_length} bytes."
         )
 
-    encryptor = PKCS1_OAEP.new(public_key)
+    encryptor = PKCS1_OAEP.new(public_key, hashAlgo=SHA256)
     return encryptor.encrypt(message)
 
 
 def rsa_decrypt(encrypted_message: bytes, private_key: RSA.RsaKey) -> bytes:
     """Decrypt RSA-OAEP ciphertext using the RSA private key."""
-    decryptor = PKCS1_OAEP.new(private_key)
+    decryptor = PKCS1_OAEP.new(private_key, hashAlgo=SHA256)
     return decryptor.decrypt(encrypted_message)
 
 
